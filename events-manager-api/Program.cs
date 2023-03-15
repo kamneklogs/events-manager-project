@@ -20,13 +20,12 @@ builder.Services.AddSwaggerGen();
 
 var configuration = builder.Configuration;
 
-builder.Services.AddHttpClient<IWeatherstackClient, WeatherstackClient>(client =>
-{ });
+builder.Services.AddHttpClient<IWeatherstackClient, WeatherstackClient>();
 builder.Services.AddScoped<IWeatherstackClient, WeatherstackClient>(s => new WeatherstackClient(s.GetRequiredService<HttpClient>(), configuration["Weatherstack:BaseUrl"], configuration["Weatherstack:AccessKey"]));
 
 builder.Services.AddDbContext<ApplicationDbContext>(opts => opts.UseSqlServer(configuration.GetConnectionString("sqlConnection")));
 
-builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();  // Which is the correct way to register the UnitOfWork?
+builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();  
 builder.Services.AddScoped<IDeveloperService, DeveloperService>();
 builder.Services.AddScoped<IEventService, EventService>();
 builder.Services.AddScoped<IInviteService, InviteService>();

@@ -14,7 +14,7 @@ static class EventTypeExtensions
         {
             1 => EventType.Virtual,
             2 => EventType.In_Person,
-            _ => throw new ArgumentException("Invalid developer type id")
+            _ => throw new ArgumentException("Invalid event type id")
         };
     }
 }

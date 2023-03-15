@@ -8,4 +8,9 @@ public class DeveloperEntity
     public string PhoneNumber { get; set; } = default!;
 
     public ICollection<InviteEntity> Invites { get; set; } = default!;
+
+    public override string ToString()
+    {
+        return $"DeveloperEntity{{Email='{Email}', Name='{Name}', CurrentCity='{CurrentCity}', PhoneNumber='{PhoneNumber}'}}";
+    }
 }

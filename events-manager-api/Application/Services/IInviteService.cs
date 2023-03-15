@@ -15,13 +15,6 @@ public interface IInviteService
     public Task<ICollection<InviteRetrievalDto>> GetInvitesByEventIdAsync(int eventId);
 
     /// <summary>
-    /// Returns all invites for a given developer email.
-    /// </summary>
-    /// <param name="developerEmail"></param>
-    /// <returns>A collection of <see cref="InviteRetrievalDto"/> objects.</returns>
-    public Task<ICollection<InviteRetrievalDto>> GetInvitesByDeveloperEmailAsync(string developerEmail);
-
-    /// <summary>
     /// Returns all invites for a given event id and status (Accepted, Rejected, Pending).
     /// </summary>
     /// <param name="eventId"></param>

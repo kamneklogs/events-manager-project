@@ -31,7 +31,6 @@ public class EventService : IEventService
 
     public async Task<EventRetrievalDto> CreateEventAsync(EventCreationDto newEvent)
     {
-
         var validationResult = _eventValidator.Validate(newEvent);
         if (!validationResult.IsValid)
         {
@@ -55,7 +54,7 @@ public class EventService : IEventService
 
     public EventRetrievalDto GetEventById(int id)
     {
-        EventEntity? eventToGet = _unitOfWork.EventRepository.Find(e => e.Id == id).FirstOrDefault();
+        EventEntity? eventToGet = _unitOfWork.EventRepository.FindWhere(e => e.Id == id).FirstOrDefault();
 
         if (eventToGet == null)
         {

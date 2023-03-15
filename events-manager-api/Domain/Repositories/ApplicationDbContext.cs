@@ -6,25 +6,15 @@ namespace events_manager_api.Domain.Repositories;
 
 public class ApplicationDbContext : DbContext
 {
-
-    private readonly IConfiguration Configuration;
-
     public DbSet<DeveloperEntity> Developers { get; set; } = default!;
     public DbSet<EventEntity> Events { get; set; } = default!;
     public DbSet<InviteEntity> Invites { get; set; } = default!;
 
-    public ApplicationDbContext(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
+    public ApplicationDbContext(DbContextOptions options) : base(options)
+    { }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.ApplyConfiguration(new DeveloperConfiguration());
-    }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlServer(Configuration.GetConnectionString("sqlConnection"));
     }
 }

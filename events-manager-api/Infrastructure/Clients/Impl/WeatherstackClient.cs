@@ -1,9 +1,7 @@
 using System.Globalization;
 using System.Net;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using events_manager_api.Common.Exceptions;
-using events_manager_api.Domain.Structs;
 using events_manager_api.Infrastructure.Clients.Models;
 
 namespace events_manager_api.Infrastructure.Clients.Impl;
@@ -12,27 +10,18 @@ public class WeatherstackClient : IWeatherstackClient
 {
     private readonly HttpClient _httpClient;
 
-    private readonly string baseParamsUrl;
+    private string baseParamsUrl;
 
     private readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    public WeatherstackClient(HttpClient httpClient, IConfiguration configuration)
+    public WeatherstackClient(HttpClient httpClient, string baseUrl, string accessKey)
     {
         _httpClient = httpClient;
-        baseParamsUrl = $"?access_key={configuration["Weatherstack:AccessKey"]}&query=";
-    }
-
-
-
-    public async Task<string?> GetTimeZoneIdByCityNameAsync(string cityName)
-    {
-        var content = await this.getPayloadResponseAsync(cityName);
-        var weatherstackResponse = JsonSerializer.Deserialize<WeatherstackSuccessResponse>(content, _jsonOptions);
-
-        return weatherstackResponse!.Location.Timezone_id;
+        _httpClient.BaseAddress = new Uri(baseUrl);
+        baseParamsUrl = $"?access_key={accessKey}&query=";
     }
 
     public async Task<Domain.Structs.Location?> GetLocationByCityNameAsync(string cityName)

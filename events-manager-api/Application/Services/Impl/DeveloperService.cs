@@ -27,12 +27,17 @@ public class DeveloperService : IDeveloperService
 
     public async Task<DeveloperDto> CreateDeveloperAsync(DeveloperDto developer)
     {
-
         ValidationResult validationResult = _validator.Validate(developer);
 
         if (!validationResult.IsValid)
         {
             throw new WebApiException(HttpStatusCode.BadRequest, "Developer information is invalid", validationResult.Errors);
+        }
+
+        // Validate if the developer already exists
+        if (this.DeveloperExists(developer.Email))
+        {
+            throw new WebApiException(HttpStatusCode.BadRequest, $"Developer with email {developer.Email} already exists");
         }
 
         _unitOfWork.DeveloperRepository.Add(_mapper.Map<DeveloperEntity>(developer));
@@ -43,7 +48,7 @@ public class DeveloperService : IDeveloperService
 
     public DeveloperDto GetDeveloperByEmail(string email)
     {
-        var developer = _unitOfWork.DeveloperRepository.GetAsync(email).Result;
+        var developer = _unitOfWork.DeveloperRepository.Get(email);
 
         if (developer == null)
         {
@@ -58,4 +63,6 @@ public class DeveloperService : IDeveloperService
         IEnumerable<DeveloperEntity> developers = _unitOfWork.DeveloperRepository.GetAllAsync().Result;
         return Task.FromResult(_mapper.Map<ICollection<DeveloperDto>>(developers));
     }
+
+    private bool DeveloperExists(string email) => _unitOfWork.DeveloperRepository.Get(email) != null;
 }

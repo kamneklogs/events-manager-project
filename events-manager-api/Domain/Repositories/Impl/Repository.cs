@@ -13,44 +13,18 @@ public class Repository<T> : IRepository<T> where T : class, new()
         _context = context;
     }
 
-    public EntityEntry<T> Add(T entity) => _context.Set<T>().Add(entity);
+    public T Add(T entity) => _context.Set<T>().Add(entity).Entity;
 
-    public void AddRange(IEnumerable<T> entities) => _context.Set<T>().AddRange(entities);
-
-    public IQueryable<T> Find(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes) {
-//=> await _context.Set<T>().FirstOrDefaultAsync(predicate) ?? Task.FromResult(new T()).Result;
+    public IQueryable<T> FindWhere(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
+    {
         var query = _context.Set<T>().Where(predicate);
         return includes.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
     }
 
-    public async Task<T> GetAsync(string id) => await _context.FindAsync<T>(id) ?? Task.FromResult(new T()).Result;
+    public T? Get(string id) =>  _context.FindAsync<T>(id).Result;
 
     public async Task<IEnumerable<T>> GetAllAsync() => await _context.Set<T>().ToListAsync();
 
-    public IQueryable<T> GetWhere(Expression<Func<T, bool>> predicate, params Expression<Func<T, object>>[] includes)
-    {
-        var query = _context.Set<T>().Where(predicate);
-        return includes.Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
-    }
-
-    public void Remove(T entity) => _context.Set<T>().Remove(entity);
-
-    public void RemoveRange(IEnumerable<T> entities) => _context.Set<T>().RemoveRange(entities);
-
     public void Update(T entity) => _context.Set<T>().Update(entity);
 
-    public void UpdateRange(IEnumerable<T> entities) => _context.Set<T>().UpdateRange(entities);
-
-    public IEnumerable<T> Include(params Expression<Func<T, object>>[] includes)
-    {
-        DbSet<T> dbSet = _context.Set<T>();
-
-        IEnumerable<T> query = default!;
-        foreach (var include in includes)
-        {
-            query = dbSet.Include(include);
-        }
-
-        return query ?? dbSet;
-    }
 }

@@ -1,4 +1,3 @@
-using events_manager_api.Application.Dtos;
 using events_manager_api.Application.Services;
 using events_manager_api.Application.Services.Impl;
 using events_manager_api.Common.ErrorHandler;
@@ -9,7 +8,7 @@ using events_manager_api.Infrastructure.Clients;
 using events_manager_api.Infrastructure.Clients.Impl;
 using events_manager_api.Util;
 using FluentValidation;
-
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,11 +21,10 @@ builder.Services.AddSwaggerGen();
 var configuration = builder.Configuration;
 
 builder.Services.AddHttpClient<IWeatherstackClient, WeatherstackClient>(client =>
-{
-    client.BaseAddress = new Uri($"{configuration["Weatherstack:BaseUrl"]}"); // Pass the base url string to the client constructor in order to omit pass IConfiguration to the client constructor
-});
+{ });
+builder.Services.AddScoped<IWeatherstackClient, WeatherstackClient>(s => new WeatherstackClient(s.GetRequiredService<HttpClient>(), configuration["Weatherstack:BaseUrl"], configuration["Weatherstack:AccessKey"]));
 
-builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddDbContext<ApplicationDbContext>(opts => opts.UseSqlServer(configuration.GetConnectionString("sqlConnection")));
 
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();  // Which is the correct way to register the UnitOfWork?
 builder.Services.AddScoped<IDeveloperService, DeveloperService>();
